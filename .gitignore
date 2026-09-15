@@ -1,0 +1,26 @@
+# Pesos de modelos e dados grandes - nao versionar
+*.gguf
+*.bin
+*.safetensors
+ollama_data/
+openwebui_data/
+
+# Segredos
+.env
+*.env
+*_token*
+*credentials*
+
+# Video (hospedar em link externo, nao no repo)
+*.mp4
+*.mov
+*.mkv
+
+# Python
+__pycache__/
+*.pyc
+
+# SO / editor
+.DS_Store
+Thumbs.db
+.vscode/

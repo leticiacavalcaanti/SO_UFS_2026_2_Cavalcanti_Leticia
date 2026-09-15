@@ -1,0 +1,3 @@
+CONTAINER ID   NAME         CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O        PIDS
+c170bbf83572   ollama       0.01%     3.148GiB / 5.788GiB   54.38%    2.12GB / 21.7MB   2.84GB / 2.1GB   36
+15e3d43eabeb   open-webui   0.35%     853.1MiB / 5.788GiB   14.39%    836MB / 13.3MB    653MB / 936MB    31

@@ -1,0 +1,5 @@
+pstree indisponivel; usando ps -ef
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0 25 19:35 ?        00:00:42 /bin/ollama serve
+root       142     0 40 19:38 ?        00:00:00 sh -c pstree -p 2>/dev/null || echo "pstree indisponivel; usando ps -ef"; ps -ef
+root       148   142  0 19:38 ?        00:00:00 ps -ef

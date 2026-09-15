@@ -1,0 +1,3 @@
+timestamp,configuracao,cenario,round_id,concorrencia_alvo,wall_time_round_s,cpu_pct_ollama,mem_uso_ollama,threads_ollama,num_processos_container
+2026-09-15T16:46:39,config1_padrao,padrao_curto,1,1,10.472,0.29%,3.006GiB / 5.788GiB,24,5
+2026-09-15T16:46:50,config1_padrao,padrao_curto,2,1,9.213,0.57%,3.012GiB / 5.788GiB,24,5

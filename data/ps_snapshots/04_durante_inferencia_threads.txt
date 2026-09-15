@@ -1,0 +1,38 @@
+UID        PID  PPID   LWP  C NLWP STIME TTY          TIME CMD
+root         1     0     1  1   25 19:35 ?        00:00:03 /bin/ollama serve
+root         1     0     7  2   25 19:35 ?        00:00:04 /bin/ollama serve
+root         1     0     8  0   25 19:35 ?        00:00:00 /bin/ollama serve
+root         1     0     9  4   25 19:35 ?        00:00:07 /bin/ollama serve
+root         1     0    10  0   25 19:35 ?        00:00:00 /bin/ollama serve
+root         1     0    11  0   25 19:35 ?        00:00:00 /bin/ollama serve
+root         1     0    12  0   25 19:35 ?        00:00:00 /bin/ollama serve
+root         1     0    13  0   25 19:35 ?        00:00:01 /bin/ollama serve
+root         1     0    14  1   25 19:35 ?        00:00:02 /bin/ollama serve
+root         1     0    61  0   25 19:35 ?        00:00:01 /bin/ollama serve
+root         1     0    74  1   25 19:35 ?        00:00:01 /bin/ollama serve
+root         1     0    75  1   25 19:35 ?        00:00:01 /bin/ollama serve
+root         1     0    76  0   25 19:35 ?        00:00:00 /bin/ollama serve
+root         1     0    77  0   25 19:35 ?        00:00:00 /bin/ollama serve
+root         1     0    78  1   25 19:35 ?        00:00:02 /bin/ollama serve
+root         1     0    79  1   25 19:35 ?        00:00:02 /bin/ollama serve
+root         1     0    80  0   25 19:35 ?        00:00:00 /bin/ollama serve
+root         1     0    81  0   25 19:35 ?        00:00:01 /bin/ollama serve
+root         1     0    82  0   25 19:35 ?        00:00:00 /bin/ollama serve
+root         1     0    83  1   25 19:35 ?        00:00:01 /bin/ollama serve
+root         1     0    84  1   25 19:35 ?        00:00:02 /bin/ollama serve
+root         1     0    85  0   25 19:35 ?        00:00:00 /bin/ollama serve
+root         1     0    86  1   25 19:36 ?        00:00:01 /bin/ollama serve
+root         1     0    87  1   25 19:36 ?        00:00:01 /bin/ollama serve
+root         1     0    88  0   25 19:36 ?        00:00:00 /bin/ollama serve
+root       149     1   149 91    9 19:38 ?        00:00:02 /usr/lib/ollama/llama-server --model /root/.ollama/models/blobs/sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff --port 38743 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4
+root       149     1   151  0    9 19:38 ?        00:00:00 /usr/lib/ollama/llama-server --model /root/.ollama/models/blobs/sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff --port 38743 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4
+root       149     1   152  0    9 19:38 ?        00:00:00 /usr/lib/ollama/llama-server --model /root/.ollama/models/blobs/sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff --port 38743 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4
+root       149     1   153  0    9 19:38 ?        00:00:00 /usr/lib/ollama/llama-server --model /root/.ollama/models/blobs/sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff --port 38743 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4
+root       149     1   154  0    9 19:38 ?        00:00:00 /usr/lib/ollama/llama-server --model /root/.ollama/models/blobs/sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff --port 38743 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4
+root       149     1   155  0    9 19:38 ?        00:00:00 /usr/lib/ollama/llama-server --model /root/.ollama/models/blobs/sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff --port 38743 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4
+root       149     1   156  0    9 19:38 ?        00:00:00 /usr/lib/ollama/llama-server --model /root/.ollama/models/blobs/sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff --port 38743 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4
+root       149     1   157  0    9 19:38 ?        00:00:00 /usr/lib/ollama/llama-server --model /root/.ollama/models/blobs/sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff --port 38743 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4
+root       149     1   158  0    9 19:38 ?        00:00:00 /usr/lib/ollama/llama-server --model /root/.ollama/models/blobs/sha256-dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff --port 38743 --host 127.0.0.1 --no-webui --offline -c 4096 -np 1 --log-verbosity 4 --no-log-prefix --no-log-timestamps --no-jinja --chat-template chatml --load-mode none --flash-attn auto -b 512 -ub 512 --context-shift --keep 4
+root       166     0   166 50    1 19:38 ?        00:00:00 sh -c ps -eLf | head -60
+root       172   166   172  0    1 19:38 ?        00:00:00 ps -eLf
+root       173   166   173  0    1 19:38 ?        00:00:00 head -60

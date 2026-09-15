@@ -1,0 +1,5 @@
+  PID  PPID STAT  NI PRI PSR %CPU %MEM NLWP COMMAND
+  149     1 Rl     0  19   3 91.5 14.9    9 llama-server
+  159     0 Ss     0  19   1 45.4  0.0    1 sh
+    1     0 Ssl    0  19   3 25.1  0.9   25 ollama
+  165   159 R      0  19   1  0.0  0.0    1 ps
