@@ -1,0 +1,145 @@
+<!doctype html><html><head><meta charset='utf-8'>
+<style>
+@page { size: A4 landscape; margin: 18mm; }
+body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a1a; font-size: 20px; }
+h1 { font-size: 2em; color: #0b3d91; }
+h2 { font-size: 1.6em; color: #0b3d91; border-bottom: 2px solid #0b3d91; padding-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 0.6em 0; font-size: 0.75em; }
+th, td { border: 1px solid #999; padding: 6px 10px; text-align: left; }
+th { background: #eef2fb; }
+code, pre { background: #f2f2f2; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
+pre { padding: 10px; }
+hr { border: none; page-break-after: always; margin: 0; }
+li { margin-bottom: 0.3em; }
+</style>
+</head><body><h1>SO_UFS_2026_2_Cavalcanti_Leticia</h1>
+<h2>Processos, Threads, Escalonamento e Inferência Local com Ollama</h2>
+<p><strong>Leticia Cavalcanti — AV1 Sistemas Operacionais — Trilha A (Ollama + Open WebUI)</strong></p>
+<hr />
+<h2>1. Trilha e modelo</h2>
+<ul>
+<li><strong>Trilha A</strong> — Ollama + Open WebUI (chat local)</li>
+<li><strong>Modelo:</strong> Llama-3.2-3B-Instruct — família Llama 3.2, Instruct, ~3,21B parâmetros</li>
+<li><strong>Formato/quantização:</strong> GGUF, Q4_K_M</li>
+<li><strong>Licença:</strong> Llama 3.2 Community License</li>
+<li>Por quê: porte reduzido (dentro do limite de 10B), execução viável em CPU, facilita observar processos/threads/syscalls sem exigir GPU</li>
+</ul>
+<hr />
+<h2>2. Ambiente experimental</h2>
+<ul>
+<li>Host: <strong>Windows 11</strong> + <strong>Docker Desktop</strong> (backend <strong>WSL2</strong>)</li>
+<li>Ambiente Linux observado: <strong>contêineres</strong> (<code>ollama</code>, <code>open-webui</code>) — Ubuntu 24.04, kernel <code>6.6.87-microsoft-standard-WSL2</code></li>
+<li>CPU: Intel i5-10210U, <strong>4 CPUs</strong> alocadas, <strong>sem GPU</strong> (execução 100% CPU)</li>
+<li>RAM: ~5,8 GiB alocados ao Docker Desktop</li>
+<li>Ollama 0.34.0 · modelo <code>llama3.2:3b</code> (GGUF Q4_K_M, 2,0 GB em disco)</li>
+</ul>
+<hr />
+<h2>3. Arquitetura</h2>
+<pre><code>Navegador → :3000 Open WebUI → API HTTP local → :11434 Ollama → runner llama.cpp
+</code></pre>
+<ul>
+<li>Comunicação via <strong>API HTTP local</strong> (<code>OLLAMA_BASE_URL</code>)</li>
+<li>Volumes Docker nomeados para persistência (modelos, conversas)</li>
+<li>Isolamento via <strong>namespaces/cgroups</strong> do container</li>
+</ul>
+<hr />
+<h2>4. Processos e threads observados</h2>
+<ul>
+<li><strong>Repouso:</strong> <code>ollama serve</code> (PID 1), 25 threads</li>
+<li><strong>Durante inferência:</strong> processo filho <strong><code>llama-server</code></strong> (PID 149, PPID 1), 9 threads, ~91,5% CPU</li>
+<li><code>ollama</code> = processo supervisor/API; trabalho pesado delegado a processo filho sob demanda</li>
+<li>Uso de memória do container <code>ollama</code>: até <strong>3,7 GiB</strong> (contexto grande)</li>
+</ul>
+<hr />
+<h2>5. Chamadas de sistema (strace -f -c -p 1)</h2>
+<ul>
+<li>6.644 chamadas capturadas durante uma requisição controlada</li>
+<li><strong><code>futex</code> = 72,8% do tempo</strong> → sincronização entre threads de inferência</li>
+<li><code>epoll_pwait</code>, <code>socket</code>, <code>accept4</code> → servidor HTTP local</li>
+<li><code>read</code>, <code>openat</code>, <code>pread64</code> → leitura dos pesos do modelo</li>
+<li><code>madvise</code> → gerência de memória do KV-cache</li>
+</ul>
+<hr />
+<h2>6. Metodologia dos experimentos</h2>
+<p>12 rounds, 3 configurações, prompt curto x longo, ≥2 repetições:</p>
+<ol>
+<li><strong>Padrão</strong> — sequencial, <code>num_ctx</code> default</li>
+<li><strong>Concorrência</strong> — 1 vs 4 requisições simultâneas</li>
+<li><strong>Contexto</strong> — <code>num_ctx</code> 2048 vs 8192</li>
+</ol>
+<p>Métricas via API do Ollama (<code>total_duration</code>, <code>eval_count</code>...) + <code>docker stats</code> + <code>ps -eo nlwp</code></p>
+<hr />
+<h2>7. Resultado principal — concorrência</h2>
+<table>
+<thead>
+<tr>
+<th>Concorrência</th>
+<th>Tempo médio (s)</th>
+<th>CPU container</th>
+<th>Timeouts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 requisição</td>
+<td>166,9</td>
+<td>0,1–0,5%</td>
+<td>0 / 2</td>
+</tr>
+<tr>
+<td><strong>4 requisições</strong></td>
+<td>191,6 (só sucessos)</td>
+<td><strong>55–75%</strong></td>
+<td><strong>6 / 8 (75%)</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Concorrência não melhorou vazão — piorou.</strong> CPU (4 núcleos, sem GPU) satura, 75% das requisições
+não completam em 300s.</p>
+<hr />
+<h2>8. Resultado — contexto</h2>
+<table>
+<thead>
+<tr>
+<th><code>num_ctx</code></th>
+<th>Tempo médio (s)</th>
+<th>Memória</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2048</td>
+<td>192,2</td>
+<td>~2,75–2,82 GiB</td>
+</tr>
+<tr>
+<td>8192</td>
+<td>232,9 (+21%)</td>
+<td>~3,58–3,68 GiB (+30%)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Troca de <code>num_ctx</code> força <strong>recarregamento do modelo</strong> (~6,3–6,7s extra na 1ª requisição)</li>
+</ul>
+<hr />
+<h2>9. Limites e riscos</h2>
+<ul>
+<li>Execução 100% CPU — sem comparação CPU/GPU real</li>
+<li>Virtualização adicional (Docker Desktop/WSL2) pode introduzir ruído nos tempos absolutos</li>
+<li>Amostra mínima (12 execuções) — carga do host Windows pode ter afetado medições</li>
+<li>Timeouts em concorrência=4 limitaram o N de amostras bem-sucedidas nesse cenário</li>
+</ul>
+<hr />
+<h2>10. Decisões adotadas</h2>
+<ul>
+<li>Uso de <strong>containers</strong> (Docker Desktop/WSL2) como "ambiente Linux" — válido pela Trilha A</li>
+<li>Artefato GGUF via biblioteca oficial do Ollama (<code>llama3.2:3b</code>), não do repositório <em>gated</em> do HF — mesmo modelo-base</li>
+<li><code>cap_add: SYS_PTRACE</code> adicionado para permitir <code>strace</code> dentro do container</li>
+</ul>
+<hr />
+<h2>Conclusão</h2>
+<p>Responsividade e uso de recursos de um sistema local de IA generativa dependem menos do tamanho
+do modelo (fixo, 3B) e mais da <strong>configuração de execução</strong> — concorrência e contexto — que
+interage diretamente com o escalonamento e paralelismo do SO subjacente.</p>
+<p><strong>Repositório:</strong> github.com/leticiacavalcaanti/SO_UFS_2026_2_Cavalcanti_Leticia</p></body></html>

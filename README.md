@@ -62,7 +62,14 @@ python scripts/04_experimentos.py
 ```
 Gera `data/experimentos/resultados.csv` (uma linha por requisição) e `data/experimentos/resumo_rounds.csv` (uma linha por rodada, com uso de CPU/memória/threads do container).
 
-### 6. Encerrar o ambiente
+### 6. Gerar relatório e slides em PDF
+```bash
+pip install markdown
+python scripts/06_gerar_pdf.py        # gera report/relatorio.pdf
+python scripts/07_gerar_slides_pdf.py # gera report/apresentacao.pdf
+```
+
+### 7. Encerrar o ambiente
 ```bash
 docker compose down
 ```
@@ -84,7 +91,11 @@ docker compose down
 │   ├── strace/
 │   └── experimentos/
 ├── report/
-│   └── relatorio.md          # relatório técnico (fonte; exportar para PDF na entrega)
+│   ├── relatorio.md           # relatório técnico (fonte)
+│   ├── relatorio.pdf          # relatório técnico exportado (entregável)
+│   ├── apresentacao.md        # slides (fonte)
+│   ├── apresentacao.pdf       # slides exportados (entregável)
+│   └── roteiro_video.md       # roteiro cronometrado para gravação do vídeo
 ├── declaracao_uso_ia.md
 ├── VIDEO.md
 └── README.md

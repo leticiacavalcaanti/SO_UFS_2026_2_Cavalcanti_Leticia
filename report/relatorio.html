@@ -1,0 +1,398 @@
+<!doctype html><html><head><meta charset='utf-8'>
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 40px auto; line-height: 1.5; color: #1a1a1a; }
+h1, h2, h3 { color: #0b3d91; }
+h1 { font-size: 1.6em; border-bottom: 2px solid #0b3d91; padding-bottom: 6px; }
+h2 { font-size: 1.3em; margin-top: 1.6em; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+h3 { font-size: 1.1em; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.85em; }
+th, td { border: 1px solid #999; padding: 6px 8px; text-align: left; }
+th { background: #eef2fb; }
+code { background: #f2f2f2; padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+pre { background: #f2f2f2; padding: 10px; overflow-x: auto; }
+blockquote { border-left: 4px solid #0b3d91; margin: 1em 0; padding: 0.2em 1em; background: #f7f9fd; }
+a { color: #0b3d91; }
+</style>
+</head><body><h1 id="relatorio-tecnico-atividade-1-av1-de-sistemas-operacionais">Relatório Técnico — Atividade 1 (AV1) de Sistemas Operacionais</h1>
+<h2 id="processos-threads-escalonamento-e-inferencia-local-com-ollama">Processos, Threads, Escalonamento e Inferência Local com Ollama</h2>
+<p><strong>Discente:</strong> Leticia Cavalcanti
+<strong>Modalidade:</strong> Individual
+<strong>Trilha:</strong> A — Chat local: Ollama + Open WebUI
+<strong>Modelo:</strong> Llama-3.2-3B-Instruct (GGUF, Q4_K_M)
+<strong>Repositório:</strong> <em>(preencher com a URL do GitHub, ex.: https://github.com/<usuario>/SO_UFS_2026_2_Cavalcanti_Leticia)</em>
+<strong>Vídeo da atividade:</strong> <em>(preencher — ver VIDEO.md)</em>
+<strong>Data:</strong> 2026-09-15</p>
+<hr />
+<h2 id="1-introducao-e-problema">1. Introdução e problema</h2>
+<p>Aplicações de IA generativa executadas localmente mobilizam processos, threads, memória,
+armazenamento, comunicação em rede, arquivos, logs, bibliotecas, runtimes e mecanismos de
+proteção do sistema operacional. Este relatório documenta a instalação, execução e análise
+experimental de um sistema local de IA generativa baseado em <strong>Ollama</strong> com a interface
+<strong>Open WebUI</strong> (Trilha A), relacionando conceitos de Sistemas Operacionais — processos, threads,
+chamadas de sistema e escalonamento — ao comportamento observado.</p>
+<p><strong>Pergunta norteadora:</strong> como a camada de aplicação, o modelo de linguagem, a quantidade de
+parâmetros, a quantização e a configuração de execução afetam processos, threads, uso de CPU,
+memória, armazenamento e responsividade de um sistema local de IA generativa?</p>
+<h2 id="2-trilha-e-modelo">2. Trilha e modelo</h2>
+<ul>
+<li><strong>Trilha escolhida:</strong> A — Ollama + Open WebUI.</li>
+<li><strong>Modelo:</strong> Llama-3.2-3B-Instruct, família Llama 3.2, variante Instruct, ~3,21 bilhões de
+  parâmetros, formato GGUF, quantização Q4_K_M, licença Llama 3.2 Community License.</li>
+<li><strong>Model card:</strong> https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct</li>
+<li><strong>Justificativa:</strong> modelo de porte reduzido (dentro do limite de 10B parâmetros), o que
+  permite instalação e execução mais rápidas em ambiente local via Ollama. A quantização
+  Q4_K_M reduz o consumo de memória e armazenamento sem comprometer significativamente a
+  qualidade das respostas, facilitando a coleta de métricas de processos, threads, uso de
+  CPU/memória e chamadas de sistema exigidas na Trilha A.</li>
+<li><strong>Nota de proveniência:</strong> ver observação no <a href="../README.md">README.md</a> sobre a diferença entre
+  o model card original (safetensors, gated) e o artefato GGUF Q4_K_M efetivamente executado
+  (biblioteca oficial do Ollama, tag <code>llama3.2:3b</code>).</li>
+</ul>
+<h2 id="3-ambiente-experimental">3. Ambiente experimental</h2>
+<p>Inventário completo em <a href="../data/ambiente_inventario.txt">data/ambiente_inventario.txt</a>, coletado
+com <code>scripts/00_inventario_ambiente.sh</code> em 2026-09-15.</p>
+<ul>
+<li><strong>Tipo de ambiente:</strong> contêineres Docker (<code>ollama</code> e <code>open-webui</code>), executados sobre a VM
+  Linux do Docker Desktop com backend <strong>WSL2</strong>, no host Windows 11.</li>
+<li><strong>Distribuição/versão Linux do container:</strong> Ubuntu 24.04.4 LTS (Noble Numbat).</li>
+<li><strong>Kernel:</strong> <code>6.6.87.2-microsoft-standard-WSL2</code> (x86_64).</li>
+<li><strong>CPU:</strong> Intel(R) Core(TM) i5-10210U @ 1.60GHz, 4 CPUs alocadas ao Docker Desktop (2 núcleos
+  físicos / 4 threads via Hyper-Threading), sem GPU (sem NVIDIA/<code>nvidia-smi</code>) — execução 100% em
+  CPU.</li>
+<li><strong>RAM:</strong> 5,8 GiB alocados ao Docker Desktop (container <code>ollama</code> chegou a usar ~3,7 GiB durante
+  os experimentos com <code>num_ctx=8192</code>).</li>
+<li><strong>Armazenamento:</strong> 1007 GB no overlay do container, 34 GB usados, 922 GB disponíveis; modelo
+  <code>llama3.2:3b</code> ocupou 2,0 GB.</li>
+<li><strong>Versão do Ollama:</strong> 0.34.0. <strong>Modelo carregado:</strong> <code>llama3.2:3b</code> (GGUF, Q4_K_M).</li>
+</ul>
+<p><strong>Execução inicial:</strong> <code>docker compose up -d</code> baixou e extraiu as imagens (<code>ollama/ollama</code> ~3,56
+GB comprimidos; <code>open-webui</code>) em ~6 minutos na primeira execução. O download do modelo
+(<code>ollama pull llama3.2:3b</code>, 2,0 GB) levou <strong>2min20s</strong>. Portas expostas: <code>11434</code> (API do Ollama)
+e <code>3000</code> (interface web do Open WebUI, mapeada para a porta interna <code>8080</code>). Nenhum erro ou aviso
+relevante nos logs de inicialização dos dois containers.</p>
+<h2 id="4-arquitetura">4. Arquitetura</h2>
+<p>Ver diagrama e descrição em <a href="../README.md#arquitetura-simplificada">README.md</a>.</p>
+<h2 id="5-processos-threads-e-chamadas-de-sistema">5. Processos, threads e chamadas de sistema</h2>
+<h3 id="51-processos-e-threads">5.1 Processos e threads</h3>
+<p>Evidências completas em <a href="../data/ps_snapshots/">data/ps_snapshots/</a>, geradas por
+<code>scripts/02_processos_threads.sh</code>.</p>
+<ul>
+<li><strong>Em repouso:</strong> único processo relevante é <code>ollama</code> (PID 1, <code>ollama serve</code>), estado <code>Ssl</code>,
+  <strong>25 threads (NLWP)</strong>, ~0,6% de memória do container.</li>
+<li><strong>Durante a inferência:</strong> o Ollama cria um <strong>processo filho</strong> <code>llama-server</code> (PID 149, PPID 1),
+  estado <code>Rl</code> (rodando, multithread), com <strong>9 threads próprias</strong>, consumindo ~91,5% de CPU e
+  ~14,9% de memória do container no momento da amostra. O processo pai <code>ollama</code> (PID 1)
+  permanece com suas 25 threads originais, agora orquestrando a requisição.</li>
+<li><strong><code>ps -eLf</code></strong> confirma a hierarquia: as 25 LWPs (light-weight processes) do PID 1 pertencem ao
+  runtime do Ollama (servidor HTTP, gerenciador de modelos), enquanto o comando completo do
+  processo filho revela os parâmetros de execução do <code>llama-server</code>: <code>--model
+  /root/.ollama/models/blobs/sha256-...</code>, <code>-c 4096</code> (tamanho de contexto), <code>-np 1</code> (1 slot de
+  processamento paralelo), <code>--flash-attn auto</code>, <code>-b 512 -ub 512</code> (tamanho de lote/ubatch).</li>
+<li><strong>Comparação repouso x inferência:</strong> o número de processos do container passou de ~3 (repouso)
+  para 5+ (inferência), e o processo <code>llama-server</code> sozinho concentrou ~91% de CPU do container
+  durante a geração — evidenciando que o <code>ollama serve</code> atua como processo supervisor/API, e todo
+  o trabalho pesado de inferência é delegado a um processo filho dedicado, criado sob demanda e
+  encerrado após a requisição.</li>
+<li>Uso agregado por container (<code>docker stats</code>, amostra única) ao final da inferência: <code>ollama</code>
+  3,15 GiB / 5,79 GiB (54,4%), 36 PIDs; <code>open-webui</code> 853 MiB (14,4%), 31 PIDs — ver
+  <code>data/ps_snapshots/05_docker_stats.txt</code>.</li>
+</ul>
+<h3 id="52-chamadas-de-sistema">5.2 Chamadas de sistema</h3>
+<p>Resumo completo (<code>strace -f -c -p 1</code>, anexado ao container <code>ollama</code> durante uma requisição
+controlada) em <a href="../data/strace/strace-resumo.txt">data/strace/strace-resumo.txt</a> — 6.644
+chamadas capturadas, 434 delas retornando erro (majoritariamente <code>EAGAIN</code> esperado em sockets
+não bloqueantes). As quatro famílias mais relevantes:</p>
+<ul>
+<li><strong>Sincronização entre threads/escalonamento</strong> (<code>futex</code>, <code>sched_yield</code>, <code>tgkill</code>): <strong>72,8% do
+  tempo total</strong> de CPU em chamadas de sistema foi gasto em <code>futex</code> (2.355 chamadas) — o
+  mecanismo do Linux para sincronizar as threads de inferência (produtor/consumidor de tokens,
+  pool de threads do llama.cpp) sem busy-waiting. <code>sched_yield</code> (293 chamadas) mostra threads
+  cedendo voluntariamente a CPU ao escalonador, comportamento típico de pools de threads
+  paralelas competindo por poucos núcleos.</li>
+<li><strong>Rede</strong> (<code>epoll_pwait</code>, <code>socket</code>, <code>accept4</code>, <code>connect</code>, <code>getsockopt</code>/<code>getsockname</code>/<code>getpeername</code>):
+  8,9% do tempo em <code>epoll_pwait</code> (1.207 chamadas) — o loop de eventos do servidor HTTP do Ollama
+  monitorando a API local na porta 11434 e a conexão interna com o <code>llama-server</code>.</li>
+<li><strong>Arquivos/E-S</strong> (<code>read</code>, <code>write</code>, <code>openat</code>, <code>pread64</code>, <code>close</code>, <code>newfstatat</code>, <code>getdents64</code>):
+  leitura do arquivo de pesos GGUF e de logs — <code>read</code> (863 chamadas, 3,0% do tempo).</li>
+<li><strong>Memória</strong> (<code>madvise</code>): 66 chamadas, usadas pelo alocador para sinalizar ao kernel o padrão
+  de acesso às páginas que armazenam os pesos do modelo e o cache de contexto (KV-cache).</li>
+<li><strong>Temporização</strong> (<code>nanosleep</code>): 12,9% do tempo, 1.481 chamadas — indicativo de espera
+  ativa/polling controlado em partes do runtime.</li>
+</ul>
+<p>Essas evidências confirmam, na prática, que a maior parte do "custo" de uma inferência não está
+em syscalls de I/O, e sim em <strong>sincronização entre threads (<code>futex</code>)</strong> — coerente com uma carga
+de trabalho fortemente paralela em CPU, disputando os 4 núcleos disponíveis.</p>
+<h2 id="6-metodologia-dos-experimentos">6. Metodologia dos experimentos</h2>
+<p>Foram executadas 12 rodadas mensuráveis, cobrindo três configurações, pelo menos dois tamanhos
+de entrada (prompt curto e prompt longo) e pelo menos duas repetições por cenário, conforme
+<code>scripts/04_experimentos.py</code>:</p>
+<ul>
+<li><strong>Configuração 1 — execução padrão:</strong> prompt curto x longo, 2 repetições cada (4 execuções),
+  requisições sequenciais, <code>num_ctx</code> padrão.</li>
+<li><strong>Configuração 2 — concorrência controlada:</strong> prompt longo, comparando 1 requisição por vez
+  x 4 requisições simultâneas, 2 repetições cada (4 rounds; 1+4 requisições por round).</li>
+<li><strong>Configuração 3 — ajuste de execução local (contexto):</strong> prompt longo, comparando
+  <code>num_ctx=2048</code> x <code>num_ctx=8192</code>, 2 repetições cada (4 execuções).</li>
+</ul>
+<p>Métricas coletadas por requisição (via campos da própria API do Ollama, ver
+<a href="https://github.com/ollama/ollama/blob/main/docs/api.md">documentação oficial</a>):
+tempo total (<code>total_duration</code>), tempo de carregamento do modelo (<code>load_duration</code>), TTFT
+aproximado (<code>load_duration + prompt_eval_duration</code>), tokens/segundo
+(<code>eval_count / eval_duration</code>), além de uso de CPU/memória do container (<code>docker stats</code>) e
+número de threads (<code>ps -eo nlwp</code>) por round.</p>
+<h2 id="7-resultados">7. Resultados</h2>
+<p>Execuções realizadas em 2026-09-15, entre 16h46 e 17h27 (horário local), 12 rounds, 22
+requisições individuais (18 concluídas com sucesso, 6 com timeout — ver Configuração 2). Dados
+brutos em <code>data/experimentos/resultados.csv</code> (por requisição) e
+<code>data/experimentos/resumo_rounds.csv</code> (por round); tabelas completas em
+<code>data/experimentos/tabelas_resumo.md</code>.</p>
+<p><strong>Tabela 1 — Resumo por configuração/cenário (médias por requisição concluída)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Configuração</th>
+<th>Cenário</th>
+<th>N</th>
+<th>Tempo total médio (s)</th>
+<th>TTFT médio (s)</th>
+<th>Tokens/s médio</th>
+<th>Erros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Config 1 — padrão</td>
+<td>prompt curto</td>
+<td>2</td>
+<td>9,80</td>
+<td>0,57</td>
+<td>6,57</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Config 1 — padrão</td>
+<td>prompt longo</td>
+<td>2</td>
+<td>188,75</td>
+<td>2,33</td>
+<td>5,17</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Config 2 — concorrência</td>
+<td>1 requisição/vez</td>
+<td>2</td>
+<td>166,88</td>
+<td>0,14</td>
+<td>5,13</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Config 2 — concorrência</td>
+<td>4 requisições simultâneas</td>
+<td>8 (2 OK, 6 timeout)</td>
+<td>191,55 (só sucessos)</td>
+<td>0,15</td>
+<td>4,98 (só sucessos)</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Config 3 — contexto</td>
+<td><code>num_ctx=2048</code></td>
+<td>2</td>
+<td>192,20</td>
+<td>5,89</td>
+<td>5,04</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Config 3 — contexto</td>
+<td><code>num_ctx=8192</code></td>
+<td>2</td>
+<td>232,86</td>
+<td>6,39</td>
+<td>4,14</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tabela 2 — Uso de recursos por round (amostra pontual via <code>docker stats</code> + <code>ps -eo nlwp</code>)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Round</th>
+<th>Configuração/Cenário</th>
+<th>Concorrência alvo</th>
+<th>Wall time (s)</th>
+<th>CPU container (amostra)</th>
+<th>Memória container</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7</td>
+<td>Config 2 — concorrência=4</td>
+<td>4</td>
+<td>300,03 (timeout)</td>
+<td><strong>55,15%</strong></td>
+<td>3,38 GiB</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Config 2 — concorrência=4</td>
+<td>4</td>
+<td>300,02 (timeout)</td>
+<td><strong>74,76%</strong></td>
+<td>3,52 GiB</td>
+</tr>
+<tr>
+<td>5–6</td>
+<td>Config 2 — concorrência=1</td>
+<td>1</td>
+<td>127–207</td>
+<td>0,12–0,45%</td>
+<td>3,13–3,24 GiB</td>
+</tr>
+<tr>
+<td>9–10</td>
+<td>Config 3 — <code>num_ctx=2048</code></td>
+<td>1</td>
+<td>188–196</td>
+<td>0,00–0,40%</td>
+<td>2,75–2,82 GiB</td>
+</tr>
+<tr>
+<td>11–12</td>
+<td>Config 3 — <code>num_ctx=8192</code></td>
+<td>1</td>
+<td>216–249</td>
+<td>0,46–0,76%</td>
+<td><strong>3,58–3,68 GiB</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-discussao">8. Discussão</h2>
+<p><strong>Concorrência (Configuração 2):</strong> com 1 requisição por vez, os tempos médios (127–207s) ficam
+na mesma ordem de grandeza da Configuração 1 com prompt longo. Ao disparar <strong>4 requisições
+simultâneas</strong> no host de 4 CPUs, <strong>apenas 1 de cada 4 requisições completou dentro do timeout de
+300s em cada round</strong> (6 de 8 requisições — 75% — falharam por timeout). O uso de CPU do
+container saltou para 55–75% na amostra pontual (contra &lt;1% nos cenários sequenciais),
+confirmando saturação de CPU: como não há GPU e o host tem apenas 4 núcleos lógicos, rodar 4
+inferências <code>llama.cpp</code> em paralelo faz cada uma competir por fatias de CPU cada vez menores,
+em vez de ganhar paralelismo real — a vazão (tokens totais gerados por unidade de tempo) <strong>piora
+drasticamente</strong>, e a responsividade também piora (75% das requisições nem retornam a tempo). O
+custo observado nos dados de <code>strace</code> (72,8% do tempo em <code>futex</code>) é coerente com esse gargalo:
+threads gastam mais tempo se sincronizando e disputando CPU do que efetivamente calculando.</p>
+<p><strong>Contexto (Configuração 3):</strong> aumentar <code>num_ctx</code> de 2048 para 8192 elevou o tempo total médio de
+~192s para ~233s (+21%) e o uso de memória do container de ~2,75–2,82 GiB para ~3,58–3,68 GiB
+(+30%), mesmo mantendo os mesmos prompt e número de tokens gerados. Além disso, a <strong>primeira</strong>
+requisição de cada novo valor de <code>num_ctx</code> teve <code>load_duration</code> não-nulo (6,67s e 6,36s,
+respectivamente) — evidência de que uma mudança no tamanho de contexto força o Ollama a
+<strong>recarregar o modelo</strong> com um KV-cache maior, custo que não aparece nas requisições
+subsequentes com o mesmo <code>num_ctx</code> (<code>load_duration≈0,001–0,004s</code>).</p>
+<p><strong>Qualidade das respostas:</strong> todas as 18 requisições concluídas produziram respostas coerentes e
+não vazias (critério adotado: resposta com mais de 30 caracteres úteis, coluna <code>qualidade=OK</code>
+em <code>resultados.csv</code>); nenhuma resposta incompleta ou visivelmente incoerente foi observada nos
+casos que não sofreram timeout.</p>
+<h2 id="9-relacao-com-sistemas-operacionais-e-ia-generativa">9. Relação com Sistemas Operacionais e IA generativa</h2>
+<p>O runtime do Ollama ilustra, na prática, conceitos centrais de Sistemas Operacionais: um
+processo principal que atende requisições via sockets TCP (chamadas <code>socket</code>/<code>accept</code>/<code>epoll</code>),
+um processo/thread "runner" responsável pela inferência (criado via <code>clone</code>, comunicando-se por
+memória mapeada e sincronizado com <code>futex</code>), escalonamento cooperativo das threads de inferência
+pelo CFS do kernel Linux, e uso de <code>mmap</code> para carregar o arquivo de pesos GGUF sem duplicar todo
+o conteúdo em memória residente. A execução em contêiner acrescenta uma camada de isolamento de
+namespaces e cgroups, que limita e contabiliza os recursos (CPU, memória) usados pelo processo
+Ollama, visível via <code>docker stats</code>.</p>
+<h2 id="10-limitacoes">10. Limitações</h2>
+<ul>
+<li>Execução 100% em CPU (sem GPU disponível no host), o que restringe a comparação CPU/GPU
+  prevista como uma das variações possíveis da Configuração 3.</li>
+<li>Ambiente virtualizado (Docker Desktop sobre WSL2) introduz uma camada adicional de
+  virtualização em relação a uma instalação nativa Linux, podendo afetar levemente medições de
+  tempo absoluto (embora não a análise qualitativa de processos/threads/syscalls).</li>
+<li>Amostra de 12 execuções é o mínimo exigido; variações de carga do host Windows durante os
+  testes podem introduzir ruído nas medições de tempo.</li>
+</ul>
+<h2 id="11-declaracao-de-uso-de-ia">11. Declaração de uso de IA</h2>
+<p>Ver <a href="../declaracao_uso_ia.md">declaracao_uso_ia.md</a>.</p>
+<h2 id="12-conclusao">12. Conclusão</h2>
+<p>Os experimentos confirmam que, em um sistema local de IA generativa baseado em Ollama, o
+comportamento de processos, threads e uso de recursos depende fortemente de três fatores
+testados. <strong>(1) Camada de aplicação e arquitetura:</strong> a Trilha A evidenciou uma separação clara
+entre o processo supervisor (<code>ollama serve</code>, sempre ativo, 24–25 threads) e um processo de
+inferência criado sob demanda (<code>llama-server</code>, ~9 threads, responsável pelo consumo intenso de
+CPU), comunicando-se via API HTTP local. <strong>(2) Concorrência:</strong> em hardware limitado a 4 CPUs e
+sem GPU, aumentar a concorrência de 1 para 4 requisições simultâneas não trouxe ganho de vazão —
+pelo contrário, causou saturação de CPU e 75% de timeouts, um custo que só aparece sob carga
+real e não é visível em uma única requisição isolada. <strong>(3) Configuração de execução (contexto):</strong>
+um contexto maior (<code>num_ctx</code> 8192 vs 2048) aumentou tempo (~+21%) e memória (~+30%) de forma
+proporcional, além de exigir recarregamento do modelo ao ser alterado. Em conjunto, esses
+resultados respondem à pergunta norteadora: a responsividade e o uso de recursos de um sistema
+local de IA generativa são determinados menos pelo tamanho do modelo em si (fixo, 3B parâmetros
+neste estudo) e mais pela <strong>configuração de execução</strong> — concorrência e tamanho de contexto —,
+que interage diretamente com as capacidades de escalonamento e paralelismo do sistema
+operacional subjacente.</p>
+<h2 id="13-respostas-as-questoes-de-analise-secao-9-do-enunciado">13. Respostas às questões de análise (Seção 9 do enunciado)</h2>
+<p><strong>16. Por que a trilha escolhida é adequada à disciplina?</strong>
+A Trilha A expõe de forma direta processos e threads distintos (Ollama e Open WebUI),
+comunicação via API HTTP local (sockets), execução em contêiner (namespaces/cgroups) e
+persistência via volumes — cobrindo múltiplos tópicos centrais de Sistemas Operacionais em um
+cenário real de IA generativa.</p>
+<p><strong>17. Qual modelo foi selecionado, quais são seus parâmetros e por que foi escolhido?</strong>
+Ver Seção 2.</p>
+<p><strong>18. Como formato, quantização, contexto e tamanho afetaram armazenamento, RAM ou VRAM?</strong>
+O modelo em GGUF Q4_K_M ocupou <strong>2,0 GB</strong> em disco (<code>ollama list</code>). O tamanho do contexto
+(<code>num_ctx</code>) teve efeito direto e mensurável na RAM: subir de 2048 para 8192 tokens elevou o uso
+de memória do container de ~2,75–2,82 GiB para ~3,58–3,68 GiB (+30%), pois o KV-cache cresce
+proporcionalmente ao tamanho do contexto. Trocar <code>num_ctx</code> também obriga o Ollama a recarregar o
+modelo (custo adicional de ~6,3–6,7s de <code>load_duration</code> na primeira requisição após a troca).
+Sem GPU disponível, não houve uso de VRAM neste experimento.</p>
+<p><strong>19. Quais processos e threads foram observados na inicialização e na inferência?</strong>
+Ver Seção 5.1.</p>
+<p><strong>20. Quais chamadas de sistema foram relevantes para carga, leitura de dados, comunicação ou logs?</strong>
+Ver Seção 5.2.</p>
+<p><strong>21. O aumento de concorrência melhorou responsividade ou vazão? Quais custos surgiram?</strong>
+Não — piorou ambas. Com 4 requisições simultâneas em um host de 4 CPUs (sem GPU), 75% das
+requisições (6 de 8) não completaram dentro do timeout de 300s; a única requisição concluída por
+round não foi mais rápida que o cenário sequencial. O custo dominante foi contenção de CPU (uso
+subiu para 55–75% na amostra, contra &lt;1% em execução sequencial) e maior tempo gasto em
+sincronização de threads (<code>futex</code>, 72,8% do tempo de syscalls medido via <code>strace</code>). Ver Seção 8.</p>
+<p><strong>22. Houve competição por CPU, memória, armazenamento, GPU ou rede?</strong>
+Sim, principalmente por <strong>CPU</strong>: os 4 núcleos lógicos do host foram o gargalo evidente na
+Configuração 2 (concorrência=4). Houve também competição por <strong>memória</strong> de forma mais branda na
+Configuração 3, onde contextos maiores aumentaram o uso de RAM em ~30%. Não houve GPU disponível
+para competição, e o armazenamento (SSD/overlay Docker) não se mostrou gargalo nos testes
+realizados. Rede não foi um fator limitante, por se tratar de comunicação local
+(<code>localhost</code>/rede interna dos containers).</p>
+<p><strong>23. Como entradas ou contextos maiores afetaram desempenho e recursos?</strong>
+Prompts mais longos (Configuração 1: curto x longo) aumentaram o tempo total de ~9,8s para
+~188,75s (a resposta também é proporcionalmente maior — de ~60 para ~900+ tokens gerados) e o
+TTFT de ~0,57s para ~2,33s. Contextos maiores (Configuração 3: <code>num_ctx</code> 2048 x 8192) aumentaram
+o tempo total médio em ~21% e o uso de memória em ~30%, além de introduzir um custo único de
+recarregamento do modelo ao trocar o tamanho de contexto. Ver Seção 8.</p>
+<p><strong>24. Como a arquitetura local contribui para privacidade, disponibilidade e controle de dados?</strong>
+Por rodar inteiramente em containers locais, sem chamadas a APIs externas, os dados de
+conversas e documentos não saem da máquina da discente; a aplicação também continua funcional
+offline (após o download do modelo), sem depender de disponibilidade de um provedor remoto.</p>
+<p><strong>25. Quais limitações ameaçam a validade dos resultados?</strong>
+Ver Seção 10.</p>
+<p><strong>26. Quais informações geradas por IA precisaram ser verificadas, corrigidas ou rejeitadas?</strong>
+Ver <a href="../declaracao_uso_ia.md">declaracao_uso_ia.md</a>.</p>
+<h2 id="14-referencias">14. Referências</h2>
+<ul>
+<li>SILBERSCHATZ, Abraham; GALVIN, Peter B.; GAGNE, Greg. <em>Operating System Concepts</em>. 10. ed.
+  Hoboken: Wiley, 2018.</li>
+<li>TANENBAUM, Andrew S.; BOS, Herbert. <em>Modern Operating Systems</em>. 5. ed. Boston: Pearson, 2023.</li>
+<li>KERRISK, Michael. <em>The Linux Programming Interface</em>. San Francisco: No Starch Press, 2010.</li>
+<li>LINUX MAN-PAGES PROJECT. fork(2), execve(2), wait(2), clone(2), pthreads(7), sched(7).
+  Disponível em: https://man7.org/linux/man-pages/.</li>
+<li>THE LINUX KERNEL DOCUMENTATION. <em>Scheduler documentation</em>. Disponível em:
+  https://docs.kernel.org/scheduler/.</li>
+<li>OLLAMA. Repositório oficial e documentação da API. Disponível em:
+  https://github.com/ollama/ollama.</li>
+<li>OPEN WEBUI. Repositório oficial. Disponível em: https://github.com/open-webui/open-webui.</li>
+<li>HUGGING FACE. Models. Disponível em: https://huggingface.co/models.</li>
+<li>NIST. <em>Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence
+  Profile</em>. NIST AI 600-1, 2024. Disponível em: https://doi.org/10.6028/NIST.AI.600-1.</li>
+</ul>
+<p><strong>URL do vídeo:</strong> <em>(preencher — ver VIDEO.md)</em></p></body></html>
