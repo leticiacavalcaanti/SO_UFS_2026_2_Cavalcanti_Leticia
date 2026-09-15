@@ -5,7 +5,7 @@
 **Modalidade:** Individual
 **Trilha:** A — Chat local: Ollama + Open WebUI
 **Modelo:** Llama-3.2-3B-Instruct (GGUF, Q4_K_M)
-**Repositório:** _(preencher com a URL do GitHub, ex.: https://github.com/<usuario>/SO_UFS_2026_2_Cavalcanti_Leticia)_
+**Repositório:** https://github.com/leticiacavalcaanti/SO_UFS_2026_2_Cavalcanti_Leticia
 **Vídeo da atividade:** _(preencher — ver VIDEO.md)_
 **Data:** 2026-09-15
 
