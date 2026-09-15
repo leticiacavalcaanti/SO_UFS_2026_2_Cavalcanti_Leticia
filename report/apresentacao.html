@@ -70,30 +70,7 @@ li { margin-bottom: 0.3em; }
 <p>Métricas via API do Ollama (<code>total_duration</code>, <code>eval_count</code>...) + <code>docker stats</code> + <code>ps -eo nlwp</code></p>
 <hr />
 <h2>7. Resultado principal — concorrência</h2>
-<table>
-<thead>
-<tr>
-<th>Concorrência</th>
-<th>Tempo médio (s)</th>
-<th>CPU container</th>
-<th>Timeouts</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1 requisição</td>
-<td>166,9</td>
-<td>0,1–0,5%</td>
-<td>0 / 2</td>
-</tr>
-<tr>
-<td><strong>4 requisições</strong></td>
-<td>191,6 (só sucessos)</td>
-<td><strong>55–75%</strong></td>
-<td><strong>6 / 8 (75%)</strong></td>
-</tr>
-</tbody>
-</table>
+<p><img alt="Gráfico de concorrência" src="../data/experimentos/grafico_concorrencia.png" /></p>
 <p><strong>Concorrência não melhorou vazão — piorou.</strong> CPU (4 núcleos, sem GPU) satura, 75% das requisições
 não completam em 300s.</p>
 <hr />

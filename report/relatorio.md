@@ -168,6 +168,14 @@ brutos em `data/experimentos/resultados.csv` (por requisição) e
 | 9–10 | Config 3 — `num_ctx=2048` | 1 | 188–196 | 0,00–0,40% | 2,75–2,82 GiB |
 | 11–12 | Config 3 — `num_ctx=8192` | 1 | 216–249 | 0,46–0,76% | **3,58–3,68 GiB** |
 
+**Gráfico principal — efeito da concorrência:**
+
+![Gráfico de concorrência](../data/experimentos/grafico_concorrencia.png)
+
+**Gráfico — efeito do tamanho de contexto:**
+
+![Gráfico de contexto](../data/experimentos/grafico_contexto.png)
+
 ## 8. Discussão
 
 **Concorrência (Configuração 2):** com 1 requisição por vez, os tempos médios (127–207s) ficam

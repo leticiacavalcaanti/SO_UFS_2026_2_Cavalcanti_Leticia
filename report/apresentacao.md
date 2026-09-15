@@ -70,10 +70,7 @@ Métricas via API do Ollama (`total_duration`, `eval_count`...) + `docker stats`
 
 ## 7. Resultado principal — concorrência
 
-| Concorrência | Tempo médio (s) | CPU container | Timeouts |
-|---|---|---|---|
-| 1 requisição | 166,9 | 0,1–0,5% | 0 / 2 |
-| **4 requisições** | 191,6 (só sucessos) | **55–75%** | **6 / 8 (75%)** |
+![Gráfico de concorrência](../data/experimentos/grafico_concorrencia.png)
 
 **Concorrência não melhorou vazão — piorou.** CPU (4 núcleos, sem GPU) satura, 75% das requisições
 não completam em 300s.
