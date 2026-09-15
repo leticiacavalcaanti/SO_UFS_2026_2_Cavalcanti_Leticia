@@ -1,3 +1,19 @@
 timestamp,configuracao,cenario,round_id,tamanho_entrada,repeticao,concorrencia_alvo,num_ctx,total_duration_s,load_duration_s,ttft_proxy_s,prompt_eval_count,eval_count,tokens_por_segundo,qualidade,erro
 2026-09-15T16:46:37,config1_padrao,padrao_curto,1,curto,1,1,default,10.4082,0.0011,0.9893,41,61,6.5,OK,
 2026-09-15T16:46:48,config1_padrao,padrao_curto,2,curto,2,1,default,9.1954,0.001,0.1492,41,60,6.64,OK,
+2026-09-15T16:50:06,config1_padrao,padrao_longo,3,longo,1,1,default,196.5016,0.0013,4.5307,93,914,4.76,OK,
+2026-09-15T16:53:09,config1_padrao,padrao_longo,4,longo,2,1,default,180.997,0.001,0.13,93,1008,5.58,OK,
+2026-09-15T16:56:38,config2_concorrencia,concorrencia_1,5,longo,1,1,default,206.6542,0.0011,0.1435,93,924,4.48,OK,
+2026-09-15T16:58:47,config2_concorrencia,concorrencia_1,6,longo,2,1,default,127.1002,0.0013,0.1419,93,734,5.78,OK,
+2026-09-15T17:01:47,config2_concorrencia,concorrencia_4,7,longo,1,4,default,178.5707,0.0016,0.1626,93,896,5.02,OK,
+2026-09-15T17:03:48,config2_concorrencia,concorrencia_4,7,longo,1,4,default,,,,,,,ERRO,timed out
+2026-09-15T17:03:48,config2_concorrencia,concorrencia_4,7,longo,1,4,default,,,,,,,ERRO,timed out
+2026-09-15T17:03:48,config2_concorrencia,concorrencia_4,7,longo,1,4,default,,,,,,,ERRO,timed out
+2026-09-15T17:07:15,config2_concorrencia,concorrencia_4,8,longo,2,4,default,204.5318,0.0013,0.1409,93,1012,4.95,OK,
+2026-09-15T17:08:50,config2_concorrencia,concorrencia_4,8,longo,2,4,default,,,,,,,ERRO,timed out
+2026-09-15T17:08:50,config2_concorrencia,concorrencia_4,8,longo,2,4,default,,,,,,,ERRO,timed out
+2026-09-15T17:08:50,config2_concorrencia,concorrencia_4,8,longo,2,4,default,,,,,,,ERRO,timed out
+2026-09-15T17:12:01,config3_contexto,num_ctx_2048,9,longo,1,1,2048,188.4041,6.6668,11.5983,93,899,5.08,OK,
+2026-09-15T17:15:19,config3_contexto,num_ctx_2048,10,longo,2,1,2048,196.0029,0.0015,0.1723,93,977,4.99,OK,
+2026-09-15T17:19:30,config3_contexto,num_ctx_8192,11,longo,1,1,8192,249.408,6.356,12.5804,93,971,4.1,OK,
+2026-09-15T17:23:08,config3_contexto,num_ctx_8192,12,longo,2,1,8192,216.306,0.0043,0.1933,93,903,4.18,OK,

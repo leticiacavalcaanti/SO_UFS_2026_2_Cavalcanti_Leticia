@@ -23,7 +23,18 @@ Claude Code (Anthropic), modelo Claude Sonnet 5, utilizado via CLI/extensão int
 - **Verificado manualmente, não apenas aceito:** todos os comandos de coleta (`ps`, `docker stats`, `strace`, chamadas à API do Ollama) foram efetivamente executados no ambiente da discente, e os números apresentados no relatório vêm dos arquivos `data/*.txt` e `data/experimentos/*.csv` gerados por essas execuções reais — não foram inventados pela IA.
 
 ## Erros encontrados
-_(preencher com base na execução real: ex. falha ao instalar `strace` no container, necessidade de rodar `apt-get update` antes, timeouts em requisições concorrentes, etc.)_
+- O script de `strace` sugerido inicialmente pela IA falhou com `ptrace(PTRACE_SEIZE, 1):
+  Operation not permitted`, porque containers Docker não concedem `ptrace` por padrão. Corrigido
+  adicionando `cap_add: [SYS_PTRACE]` ao serviço `ollama` no `docker-compose.yml`.
+- Depois de corrigir a permissão, o `strace` ainda falhava ao copiar o arquivo de resumo
+  (`/tmp/strace-resumo.txt`) porque o Git Bash/MSYS no Windows converte automaticamente caminhos
+  no estilo `/tmp/...` passados como argumento de linha de comando para um caminho do sistema de
+  arquivos Windows. Corrigido definindo `MSYS_NO_PATHCONV=1` no script.
+- Nos experimentos de concorrência (Configuração 2, concorrência=4), 6 das 8 requisições
+  disparadas em paralelo estouraram o timeout de 300s definido no script Python — não foi um
+  erro do script, mas um resultado real e esperado dado que o host tem apenas 4 CPUs e nenhuma
+  GPU; esse comportamento foi mantido e discutido no relatório em vez de ser "escondido"
+  aumentando artificialmente o timeout.
 
 ## Testes, documentação ou observações usados para verificar respostas
 - Execução direta dos comandos sugeridos no ambiente da discente (não apenas leitura).
