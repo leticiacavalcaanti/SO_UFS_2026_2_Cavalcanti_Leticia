@@ -35,13 +35,13 @@ memória, armazenamento e responsividade de um sistema local de IA generativa?
   Q4_K_M reduz o consumo de memória e armazenamento sem comprometer significativamente a
   qualidade das respostas, facilitando a coleta de métricas de processos, threads, uso de
   CPU/memória e chamadas de sistema exigidas na Trilha A.
-- **Nota de proveniência:** ver observação no [README.md](../README.md) sobre a diferença entre
+- **Nota de proveniência:** ver observação no README.md do repositório sobre a diferença entre
   o model card original (safetensors, gated) e o artefato GGUF Q4_K_M efetivamente executado
   (biblioteca oficial do Ollama, tag `llama3.2:3b`).
 
 ## 3. Ambiente experimental
 
-Inventário completo em [data/ambiente_inventario.txt](../data/ambiente_inventario.txt), coletado
+Inventário completo em [data/ambiente_inventario.txt](https://github.com/leticiacavalcaanti/SO_UFS_2026_2_Cavalcanti_Leticia/blob/master/data/ambiente_inventario.txt), coletado
 com `scripts/00_inventario_ambiente.sh` em 2026-09-15.
 
 - **Tipo de ambiente:** contêineres Docker (`ollama` e `open-webui`), executados sobre a VM
@@ -65,12 +65,12 @@ relevante nos logs de inicialização dos dois containers.
 
 ## 4. Arquitetura
 
-Ver diagrama e descrição em [README.md](../README.md#arquitetura-simplificada).
+Ver diagrama e descrição na seção "Arquitetura simplificada" do README.md do repositório.
 
 ## 5. Processos, threads e chamadas de sistema
 
 ### 5.1 Processos e threads
-Evidências completas em [data/ps_snapshots/](../data/ps_snapshots/), geradas por
+Evidências completas em [data/ps_snapshots/](https://github.com/leticiacavalcaanti/SO_UFS_2026_2_Cavalcanti_Leticia/tree/master/data/ps_snapshots), geradas por
 `scripts/02_processos_threads.sh`.
 
 - **Em repouso:** único processo relevante é `ollama` (PID 1, `ollama serve`), estado `Ssl`,
@@ -95,7 +95,7 @@ Evidências completas em [data/ps_snapshots/](../data/ps_snapshots/), geradas po
 
 ### 5.2 Chamadas de sistema
 Resumo completo (`strace -f -c -p 1`, anexado ao container `ollama` durante uma requisição
-controlada) em [data/strace/strace-resumo.txt](../data/strace/strace-resumo.txt) — 6.644
+controlada) em [data/strace/strace-resumo.txt](https://github.com/leticiacavalcaanti/SO_UFS_2026_2_Cavalcanti_Leticia/blob/master/data/strace/strace-resumo.txt) — 6.644
 chamadas capturadas, 434 delas retornando erro (majoritariamente `EAGAIN` esperado em sockets
 não bloqueantes). As quatro famílias mais relevantes:
 
