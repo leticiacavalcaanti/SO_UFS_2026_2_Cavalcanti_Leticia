@@ -6,7 +6,7 @@
 **Trilha:** A — Chat local: Ollama + Open WebUI
 **Modelo:** Llama-3.2-3B-Instruct (GGUF, Q4_K_M)
 **Repositório:** https://github.com/leticiacavalcaanti/SO_UFS_2026_2_Cavalcanti_Leticia
-**Vídeo da atividade:** _(preencher — ver VIDEO.md)_
+**Vídeo da atividade:** https://www.youtube.com/watch?v=UoZGFTonpg0
 **Data:** 2026-09-15
 
 ---
@@ -226,7 +226,7 @@ Ollama, visível via `docker stats`.
 
 ## 11. Declaração de uso de IA
 
-Ver [declaracao_uso_ia.md](../declaracao_uso_ia.md).
+Conforme anexo.
 
 ## 12. Conclusão
 
@@ -303,7 +303,7 @@ offline (após o download do modelo), sem depender de disponibilidade de um prov
 Ver Seção 10.
 
 **26. Quais informações geradas por IA precisaram ser verificadas, corrigidas ou rejeitadas?**
-Ver [declaracao_uso_ia.md](../declaracao_uso_ia.md).
+Conforme anexo.
 
 ## 14. Referências
 
@@ -322,4 +322,4 @@ Ver [declaracao_uso_ia.md](../declaracao_uso_ia.md).
 - NIST. *Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence
   Profile*. NIST AI 600-1, 2024. Disponível em: https://doi.org/10.6028/NIST.AI.600-1.
 
-**URL do vídeo:** _(preencher — ver VIDEO.md)_
+**URL do vídeo:** https://www.youtube.com/watch?v=UoZGFTonpg0

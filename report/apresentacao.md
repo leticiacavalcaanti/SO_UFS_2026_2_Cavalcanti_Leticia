@@ -1,6 +1,4 @@
-# SO_UFS_2026_2_Cavalcanti_Leticia
-
-## Processos, Threads, Escalonamento e Inferência Local com Ollama
+# Processos, Threads, Escalonamento e Inferência Local com Ollama
 **Leticia Cavalcanti — AV1 Sistemas Operacionais — Trilha A (Ollama + Open WebUI)**
 
 ---

@@ -11,11 +11,11 @@ Claude Code (Anthropic), modelo Claude Sonnet 5, utilizado via CLI/extensão int
 5. Explicar conceitos de Sistemas Operacionais (escalonamento, threads, chamadas de sistema) usados na interpretação dos resultados.
 
 ## Prompts relevantes (até 5)
-1. "Preciso de ajuda com esse trabalho de Sistemas Operacionais sobre Ollama, processos, threads e escalonamento — pode me ajudar?"
-2. "Crie o projeto em C:\Users\letic\Documents" (organização do repositório na pasta correta).
-3. Definição da trilha, modelo e ambiente: Trilha A (Ollama + Open WebUI), modelo `Llama-3.2-3B-Instruct` (GGUF, Q4_K_M), ambiente WSL/Docker Desktop.
-4. Pedido de scripts para inventário do ambiente, observação de processos/threads, `strace` e experimentos comparativos (Configurações 1, 2 e 3).
-5. Pedido de estrutura do relatório técnico, README e checklist de entregáveis conforme o enunciado da atividade.
+1. "O `strace` dentro do container do Ollama está falhando com `ptrace(PTRACE_SEIZE, 1): Operation not permitted` — por que isso acontece em containers Docker e como resolvo sem rodar o container como privilegiado?"
+2. "Quero comparar 1 requisição sequencial contra 4 requisições simultâneas usando a API do Ollama, e depois `num_ctx` 2048 contra 8192. Como estruturar um script Python que dispare essas requisições, use threads para a concorrência e grave tempo total, TTFT e uso de CPU/memória do container em CSV?"
+3. "Nos logs do `llama-server` aparece muito `futex` no resumo do `strace -c`. Isso é normal para um processo de inferência com várias threads, ou indica algum problema de contenção?"
+4. "O modelo oficial `meta-llama/Llama-3.2-3B-Instruct` no Hugging Face é gated e distribui só `safetensors`. Para rodar via Ollama localmente, faz sentido usar o build GGUF `llama3.2:3b` da biblioteca do próprio Ollama e considerar o mesmo modelo-base, ou isso muda a validade da minha reserva no Classroom?"
+5. "Nos meus experimentos de concorrência, 6 das 8 requisições com concorrência=4 deram timeout em 300s — isso é esperado num notebook com 4 CPUs e sem GPU, ou é sinal de erro na forma como configurei o teste?"
 
 ## Sugestões aproveitadas, corrigidas ou rejeitadas
 - **Aproveitado:** uso de containers Docker (backend WSL2 do Docker Desktop) como "ambiente Linux", em vez de instalar uma distribuição WSL completa — mais rápido de configurar sem perda de validade, já que a Trilha A prevê explicitamente análise de "execução nativa ou em contêiner".

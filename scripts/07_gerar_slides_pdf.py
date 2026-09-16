@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Converte report/apresentacao.md (slides separados por '---') em PDF paisagem."""
 import subprocess
+import tempfile
 from pathlib import Path
 
 import markdown
@@ -22,6 +23,8 @@ code, pre { background: #f2f2f2; padding: 2px 6px; border-radius: 3px; font-size
 pre { padding: 10px; }
 hr { border: none; page-break-after: always; margin: 0; }
 li { margin-bottom: 0.3em; }
+img { max-width: 100%; max-height: 115mm; display: block; margin: 6px auto; }
+p { margin: 0.4em 0; }
 </style>
 """
 
@@ -29,7 +32,8 @@ li { margin-bottom: 0.3em; }
 def main():
     text = SRC.read_text(encoding="utf-8")
     body = markdown.markdown(text, extensions=["tables", "fenced_code"])
-    html = f"<!doctype html><html><head><meta charset='utf-8'>{CSS}</head><body>{body}</body></html>"
+    title = "Apresentacao - SO Atividade 1 - Leticia Cavalcanti"
+    html = f"<!doctype html><html><head><meta charset='utf-8'><title>{title}</title>{CSS}</head><body>{body}</body></html>"
     HTML_OUT.write_text(html, encoding="utf-8")
     print(f"HTML gerado: {HTML_OUT}")
 
@@ -38,12 +42,14 @@ def main():
         browser = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
     html_abs = HTML_OUT.resolve()
     pdf_abs = PDF_OUT.resolve()
-    cmd = [
-        browser, "--headless", "--disable-gpu", "--no-sandbox",
-        "--print-to-pdf-no-header",
-        f"--print-to-pdf={pdf_abs}", f"file:///{html_abs.as_posix()}",
-    ]
-    subprocess.run(cmd, check=True, timeout=60)
+    with tempfile.TemporaryDirectory(prefix="edge-print-") as tmp_profile:
+        cmd = [
+            browser, "--headless=new", "--disable-gpu", "--no-sandbox",
+            f"--user-data-dir={tmp_profile}",
+            "--no-pdf-header-footer",
+            f"--print-to-pdf={pdf_abs}", f"file:///{html_abs.as_posix()}",
+        ]
+        subprocess.run(cmd, check=True, timeout=60)
     print(f"PDF gerado: {PDF_OUT}")
 
 

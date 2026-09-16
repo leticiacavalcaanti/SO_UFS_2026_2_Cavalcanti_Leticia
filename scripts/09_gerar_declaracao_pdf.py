@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Converte report/relatorio.md em PDF via HTML + Chromium headless (Edge ou Chrome)."""
+"""Converte declaracao_uso_ia.md em PDF via HTML + Chromium headless (Edge ou Chrome)."""
 import shutil
 import subprocess
 import tempfile
@@ -7,9 +7,9 @@ from pathlib import Path
 
 import markdown
 
-SRC = Path("report/relatorio.md")
-HTML_OUT = Path("report/relatorio.html")
-PDF_OUT = Path("report/relatorio.pdf")
+SRC = Path("declaracao_uso_ia.md")
+HTML_OUT = Path("declaracao_uso_ia.html")
+PDF_OUT = Path("declaracao_uso_ia.pdf")
 
 CSS = """
 <style>
@@ -17,7 +17,6 @@ body { font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 40p
 h1, h2, h3 { color: #0b3d91; }
 h1 { font-size: 1.6em; border-bottom: 2px solid #0b3d91; padding-bottom: 6px; }
 h2 { font-size: 1.3em; margin-top: 1.6em; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
-h3 { font-size: 1.1em; }
 table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.85em; }
 th, td { border: 1px solid #999; padding: 6px 8px; text-align: left; }
 th { background: #eef2fb; }
@@ -31,8 +30,8 @@ a { color: #0b3d91; }
 
 def convert_md_to_html():
     text = SRC.read_text(encoding="utf-8")
-    body = markdown.markdown(text, extensions=["tables", "fenced_code", "toc"])
-    title = "Relatorio Tecnico - SO Atividade 1 - Leticia Cavalcanti"
+    body = markdown.markdown(text, extensions=["tables", "fenced_code"])
+    title = "Declaracao de Uso de IA Generativa - SO Atividade 1 - Leticia Cavalcanti"
     html = f"<!doctype html><html><head><meta charset='utf-8'><title>{title}</title>{CSS}</head><body>{body}</body></html>"
     HTML_OUT.write_text(html, encoding="utf-8")
     print(f"HTML gerado: {HTML_OUT}")

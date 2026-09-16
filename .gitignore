@@ -19,8 +19,23 @@ openwebui_data/
 # Python
 __pycache__/
 *.pyc
+.venv/
+venv/
+
+# HTML intermediario (gerado pelos scripts 06/07/09 a partir dos .md; o entregavel e o .pdf)
+report/*.html
+declaracao_uso_ia.html
+
+# Arquivos de teste/temporarios gerados durante ajustes de PDF
+report/test_*.pdf
+
+# Configuracao local do docker compose (pode conter overrides especificos da maquina)
+docker-compose.override.yml
 
 # SO / editor
 .DS_Store
 Thumbs.db
+desktop.ini
 .vscode/
+.idea/
+*.log

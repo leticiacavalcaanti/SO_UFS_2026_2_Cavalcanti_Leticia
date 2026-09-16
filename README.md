@@ -97,12 +97,13 @@ docker compose down
 │   ├── apresentacao.pdf       # slides exportados (entregável)
 │   └── roteiro_video.md       # roteiro cronometrado para gravação do vídeo
 ├── declaracao_uso_ia.md
+├── declaracao_uso_ia.pdf      # anexo citado no relatório (Seção 11 e questão 26)
 ├── VIDEO.md
 └── README.md
 ```
 
 ## Declaração de Uso de IA Generativa
-Ver [declaracao_uso_ia.md](declaracao_uso_ia.md).
+Ver [declaracao_uso_ia.md](declaracao_uso_ia.md) (anexada ao relatório também em [declaracao_uso_ia.pdf](declaracao_uso_ia.pdf)).
 
 ## Licença e observações
 Este repositório não contém pesos de modelo, chaves, tokens ou dados pessoais (ver `.gitignore`). O modelo é baixado localmente pelo script `scripts/01_baixar_modelo.sh` a partir da biblioteca oficial do Ollama.
